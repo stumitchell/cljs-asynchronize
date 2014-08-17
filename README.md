@@ -23,6 +23,7 @@ with an elipsis '...':
 (asynchronize
   (def res (.get http "http://www.google.com" ...))
   (console/log res))
+  ;;; This example does not work now that the code assumes the callback is (fn [err res] ...)
 ```
 
 More examples can be found in [examples](https://github.com/gilbertw1/cljs-asynchronize/tree/master/examples)
