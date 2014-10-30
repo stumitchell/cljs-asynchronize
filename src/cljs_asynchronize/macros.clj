@@ -7,11 +7,11 @@
   `(fn [err# res#]
     (cljs.core.async.macros/go
       (if err#
-        (~'>! ~fc err#)
-        (~'>! ~sc res#)))))
+        (cljs.core.async/>! ~fc err#)
+        (cljs.core.async/>! ~sc res#)))))
 
 (defn- success-value-or-throw [sc fc]
-  `(let [[v# c#] (~'alts! [~sc ~fc])]
+  `(let [[v# c#] (cljs.core.async/alts! [~sc ~fc])]
       (try
         (if (= c# ~sc)
           v#
@@ -23,11 +23,10 @@
 (defn- transform [forms]
   (if (list? forms)
     (if (= (last forms) '...)
-      (let [sc (gensym) fc (gensym)] ; sc -> success, fc -> fail
-        `(let [~sc (cljs.core.async/chan) ~fc (cljs.core.async/chan)]
+        `(let [sc# (cljs.core.async/chan) fc# (cljs.core.async/chan)] ; sc -> success, fc -> fail
            (do 
-             ~(add-argument-last (map transform (butlast forms)) (callback sc fc))
-             ~(success-value-or-throw sc fc))))
+             ~(add-argument-last (map transform (butlast forms)) (callback sc# fc#))
+             ~(success-value-or-throw sc# fc#)))
       (map transform forms))
     forms))
 
